@@ -325,15 +325,18 @@ static int PyTask_init(PyTask *self, PyObject *args, PyObject *kwds) {
   PyObject *resource_map = nullptr;
   // True if we should use the raylet code path and false otherwise.
   PyObject *use_raylet_object = nullptr;
+  // The task's timeout millis. Both -1 and 0 mean no timeout.
+  int64_t timeout_millis = -1;
+
   if (!PyArg_ParseTuple(
-          args, "O&O&OiO&i|O&O&O&O&iOOOO", &PyObjectToUniqueID, &driver_id,
+          args, "O&O&OiO&i|O&O&O&O&iOOOOl", &PyObjectToUniqueID, &driver_id,
           &PyObjectToUniqueID, &function_id, &arguments, &num_returns,
           &PyObjectToUniqueID, &parent_task_id, &parent_counter,
           &PyObjectToUniqueID, &actor_creation_id, &PyObjectToUniqueID,
           &actor_creation_dummy_object_id, &PyObjectToUniqueID, &actor_id,
           &PyObjectToUniqueID, &actor_handle_id, &actor_counter,
           &is_actor_checkpoint_method_object, &execution_arguments,
-          &resource_map, &use_raylet_object)) {
+          &resource_map, &use_raylet_object, &timeout_millis)) {
     return -1;
   }
 
@@ -458,7 +461,7 @@ static int PyTask_init(PyTask *self, PyObject *args, PyObject *kwds) {
     self->task_spec = new ray::raylet::TaskSpecification(
         driver_id, parent_task_id, parent_counter, actor_creation_id,
         actor_creation_dummy_object_id, actor_id, actor_handle_id,
-        actor_counter, function_id, args, num_returns, required_resources);
+        actor_counter, function_id, args, num_returns, required_resources, timeout_millis);
   }
 
   /* Set the task's execution dependencies. */

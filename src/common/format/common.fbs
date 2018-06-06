@@ -52,6 +52,9 @@ table TaskInfo {
   // The required_resources vector indicates the quantities of the different
   // resources required by this task.
   required_resources: [ResourcePair];
+  // The timeout of the task's call, unit is millis.
+  // Positive means timeout time, otherwise means no timeout.
+  timeout_millis: long = -1;
 }
 
 // Object information data structure.
@@ -110,6 +113,9 @@ table TaskReply {
   // A boolean representing whether the update was successful. This field
   // should only be used for test-and-set operations.
   updated: bool;
+  // The reaming time of the task's call, unit=millis.
+  // Under 0 means no timeout and being equal to 0 means timeout.
+  timeout_budget_millis: long = -1;
 }
 
 root_type TaskReply;

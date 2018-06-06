@@ -58,6 +58,14 @@ bool Task::DependsOn(const ObjectID &object_id) const {
   return false;
 }
 
+int64_t Task::TimeoutMillis() const {
+  return task_spec_.TimeoutMillis();
+}
+
+int64_t Task::TimeoutBudgetMillis() const {
+  return task_execution_spec_.TimeoutBudgetMillis();
+}
+
 }  // namespace raylet
 
 }  // namespace ray

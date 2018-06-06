@@ -54,6 +54,10 @@ void TaskExecutionSpecification::SetLastTimestamp(int64_t new_timestamp) {
   execution_spec_.last_timestamp = new_timestamp;
 }
 
+int64_t TaskExecutionSpecification::TimeoutBudgetMillis() const {
+  return execution_spec_.timeout_budget_millis;
+}
+
 }  // namespace raylet
 
 }  // namespace ray

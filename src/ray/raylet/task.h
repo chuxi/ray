@@ -73,6 +73,16 @@ class Task {
   /// false otherwise.
   bool DependsOn(const ObjectID &object_id) const;
 
+  /// Get the task's timeout millis.
+  ///
+  /// \return The timeout millis of the task.
+  int64_t TimeoutMillis() const;
+
+  /// Get the task's timeout budget millis.
+  ///
+  /// \return The timeout budget millis of the task.
+  int64_t TimeoutBudgetMillis() const;
+
  private:
   /// Task execution specification, consisting of all dynamic/mutable
   /// information about this task determined at execution time..

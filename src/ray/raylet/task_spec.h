@@ -98,7 +98,8 @@ class TaskSpecification {
                     int64_t parent_counter, const FunctionID &function_id,
                     const std::vector<std::shared_ptr<TaskArgument>> &arguments,
                     int64_t num_returns,
-                    const std::unordered_map<std::string, double> &required_resources);
+                    const std::unordered_map<std::string, double> &required_resources,
+                    int64_t timeout_millis = -1);
 
   TaskSpecification(const UniqueID &driver_id, const TaskID &parent_task_id,
                     int64_t parent_counter, const ActorID &actor_creation_id,
@@ -107,7 +108,8 @@ class TaskSpecification {
                     int64_t actor_counter, const FunctionID &function_id,
                     const std::vector<std::shared_ptr<TaskArgument>> &task_arguments,
                     int64_t num_returns,
-                    const std::unordered_map<std::string, double> &required_resources);
+                    const std::unordered_map<std::string, double> &required_resources,
+                    int64_t timeout_millis = -1);
 
   ~TaskSpecification() {}
 
@@ -134,6 +136,12 @@ class TaskSpecification {
   size_t ArgValLength(int64_t arg_index) const;
   double GetRequiredResource(const std::string &resource_name) const;
   const ResourceSet GetRequiredResources() const;
+
+  /// Get the timeout millis of the task.
+  ///
+  /// \param void.
+  /// \return Timeout millis of the task.
+  int64_t TimeoutMillis() const;
 
   // Methods specific to actor tasks.
   bool IsActorCreationTask() const;

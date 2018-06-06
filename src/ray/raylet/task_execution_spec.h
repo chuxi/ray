@@ -77,6 +77,11 @@ class TaskExecutionSpecification {
   /// time stamp to. Tracks the last time this task entered a local scheduler.
   void SetLastTimestamp(int64_t new_timestamp);
 
+  /// Get the task's timeout budget time and the unit is millis.
+  ///
+  /// \return The timeout budget time of the task.
+  int64_t TimeoutBudgetMillis() const;
+
  private:
   protocol::TaskExecutionSpecificationT execution_spec_;
 };

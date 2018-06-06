@@ -116,6 +116,17 @@ class RemoteFunction(object):
         worker.check_connected()
         ray.worker.check_main_thread()
         kwargs = {} if kwargs is None else kwargs
+
+        """
+        TODO: Move this code into ray.signature, like this：
+        timeout_millis = ray.signature.pop_timeout_millis_arg(self._function_signature, args, kwargs)
+        """
+        if 'timeout_millis' in kwargs:
+            timeout_millis = kwargs['timeout_millis']
+            kwargs.pop('timeout_millis')
+        else:
+            timeout_millis = -1
+
         args = ray.signature.extend_args(self._function_signature, args,
                                          kwargs)
 
@@ -136,7 +147,8 @@ class RemoteFunction(object):
             ray.ObjectID(self._function_id),
             args,
             num_return_vals=num_return_vals,
-            resources=resources)
+            resources=resources,
+            timeout_millis=timeout_millis)
         if len(object_ids) == 1:
             return object_ids[0]
         elif len(object_ids) > 1:

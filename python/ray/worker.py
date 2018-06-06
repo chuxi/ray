@@ -521,7 +521,8 @@ class Worker(object):
                     execution_dependencies=None,
                     num_return_vals=None,
                     resources=None,
-                    driver_id=None):
+                    driver_id=None,
+                    timeout_millis=-1):
         """Submit a remote task to the scheduler.
 
         Tell the scheduler to schedule the execution of the function with ID
@@ -551,7 +552,7 @@ class Worker(object):
                 the exceptional case that an actor task is being dispatched to
                 an actor created by a different driver, this should be the
                 driver ID of the driver that created the actor.
-
+            timeout_millis: The task's timeout millis.
         Returns:
             The return object IDs for this task.
         """
@@ -607,7 +608,7 @@ class Worker(object):
                 num_return_vals, self.current_task_id, self.task_index,
                 actor_creation_id, actor_creation_dummy_object_id, actor_id,
                 actor_handle_id, actor_counter, is_actor_checkpoint_method,
-                execution_dependencies, resources, self.use_raylet)
+                execution_dependencies, resources, self.use_raylet, timeout_millis)
             # Increment the worker's task index to track how many tasks have
             # been submitted by the current task so far.
             self.task_index += 1
