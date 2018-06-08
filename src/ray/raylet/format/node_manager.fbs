@@ -72,8 +72,9 @@ table TaskExecutionSpecification {
   last_timestamp: double;
   // The number of times this task was spilled back by local schedulers.
   num_forwards: int;
-  // The task's timeout budget time.
-  timeout_budget_millis: long;
+  // The reaming time of the task's call, unit=millis.
+  // Under 0 means no timeout and being equal to 0 means timeout.
+  timeout_budget_millis: long = -1;
 }
 
 table Task {
@@ -104,6 +105,8 @@ table GetTaskReply {
   task_spec: string;
   // A list of the resources reserved for this worker.
   fractional_resource_ids: [ResourceIdSetInfo];
+  // The timeout budget of this task.
+  timeout_budget_millis: long = -1;
 }
 
 // This struct is used to register a new worker with the local scheduler.
@@ -133,6 +136,8 @@ table ForwardTaskRequest {
   // The tasks in the uncommitted lineage of the forwarded task. This
   // should include task_id.
   uncommitted_tasks: [Task];
+  // The timeout budget of this task.
+  timeout_budget_millis: long = -1;
 }
 
 table ReconstructObjects {

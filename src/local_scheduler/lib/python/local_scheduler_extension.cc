@@ -72,20 +72,21 @@ static PyObject *PyLocalSchedulerClient_submit(PyObject *self, PyObject *args) {
 static PyObject *PyLocalSchedulerClient_get_task(PyObject *self) {
   TaskSpec *task_spec;
   int64_t task_size;
+  int64_t task_timeout_budget;
   /* Drop the global interpreter lock while we get a task because
    * local_scheduler_get_task may block for a long time. */
   Py_BEGIN_ALLOW_THREADS
   if (!reinterpret_cast<PyLocalSchedulerClient *>(self)->local_scheduler_connection->use_raylet) {
     task_spec = local_scheduler_get_task(
         reinterpret_cast<PyLocalSchedulerClient *>(self)->local_scheduler_connection,
-        &task_size);
+        &task_size, &task_timeout_budget);
   } else {
     task_spec = local_scheduler_get_task_raylet(
         reinterpret_cast<PyLocalSchedulerClient *>(self)->local_scheduler_connection,
-        &task_size);
+        &task_size, &task_timeout_budget);
   }
   Py_END_ALLOW_THREADS
-  return PyTask_make(task_spec, task_size);
+  return PyTask_make(task_spec, task_size, task_timeout_budget);
 }
 // clang-format on
 

@@ -62,6 +62,8 @@ table GetTaskReply {
   task_spec: string;
   // The IDs of the GPUs that the worker is allowed to use for this task.
   gpu_ids: [int];
+  // The timeout budget of this task.
+  timeout_budget_millis: long = -1;
 }
 
 table EventLogMessage {

@@ -982,10 +982,31 @@ class Worker(object):
         """
         function_id = task.function_id()
         driver_id = task.driver_id().id()
+        timeout_budget = task.timeout_budget()
 
+        # Check if it's timeout.
+        timeout_budget_second = timeout_budget / 1000
+        def timeout_callback():
+            # Write the timeout exception to object store.
+            e = Exception()
+            return_object_ids = task.returns()
+            self._handle_process_task_failure(function_id, return_object_ids, e, "task timeout.")
+
+            # Kill the process.
+            self.local_scheduler_client.disconnect()
+            os._exit(0)
+
+        timer = threading.Timer(timeout_budget_second, timeout_callback)
+        if timeout_budget == 0:
+            timeout_callback()
+            return
+
+        if timeout_budget == -1:
+            timer.start()
+        
         # TODO(rkn): It would be preferable for actor creation tasks to share
         # more of the code path with regular task execution.
-        if (task.actor_creation_id() != ray.ObjectID(NIL_ACTOR_ID)):
+        if task.actor_creation_id() != ray.ObjectID(NIL_ACTOR_ID):
             self._become_actor(task)
             return
 
@@ -1013,6 +1034,8 @@ class Worker(object):
             }
             with log_span("ray:task", contents=contents, worker=self):
                 self._process_task(task)
+                #TODO(wangqing)
+                timer.cancel()
 
         # Push all of the log events to the global state store.
         flush_log()

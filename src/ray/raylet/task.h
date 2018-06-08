@@ -83,6 +83,12 @@ class Task {
   /// \return The timeout budget millis of the task.
   int64_t TimeoutBudgetMillis() const;
 
+  /// Set the task's timeout budget millis.
+  ///
+  /// \param ms The timeout budget millis.
+  /// \return void
+  void SetTimeoutBudgetMillis(int64_t ms);
+
  private:
   /// Task execution specification, consisting of all dynamic/mutable
   /// information about this task determined at execution time..

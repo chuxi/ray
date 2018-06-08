@@ -108,10 +108,12 @@ void local_scheduler_log_event(LocalSchedulerConnection *conn,
  *
  * @param conn The connection information.
  * @param task_size A pointer to fill out with the task size.
+ * @param task_timeout_budget A pointer to fill out with the task timeout budget.
  * @return The address of the assigned task.
  */
 TaskSpec *local_scheduler_get_task(LocalSchedulerConnection *conn,
-                                   int64_t *task_size);
+                                   int64_t *task_size,
+                                   int64_t *task_timeout_budget);
 
 /// Get next task for this client. This will block until the scheduler assigns
 /// a task to this worker. This allocates and returns a task, and so the task

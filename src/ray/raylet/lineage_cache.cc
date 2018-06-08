@@ -108,7 +108,8 @@ const std::unordered_map<const UniqueID, LineageEntry> &Lineage::GetEntries() co
 }
 
 flatbuffers::Offset<protocol::ForwardTaskRequest> Lineage::ToFlatbuffer(
-    flatbuffers::FlatBufferBuilder &fbb, const TaskID &task_id) const {
+    flatbuffers::FlatBufferBuilder &fbb, const TaskID &task_id,
+    int64_t timeout_budget_millis) const {
   RAY_CHECK(GetEntry(task_id));
   // Serialize the task and object entries.
   std::vector<flatbuffers::Offset<protocol::Task>> uncommitted_tasks;
@@ -117,7 +118,8 @@ flatbuffers::Offset<protocol::ForwardTaskRequest> Lineage::ToFlatbuffer(
   }
 
   auto request = protocol::CreateForwardTaskRequest(fbb, to_flatbuf(fbb, task_id),
-                                                    fbb.CreateVector(uncommitted_tasks));
+                                                    fbb.CreateVector(uncommitted_tasks),
+                                                    timeout_budget_millis);
   return request;
 }
 
@@ -196,7 +198,7 @@ void LineageCache::AddWaitingTask(const Task &task, const Lineage &uncommitted_l
   RAY_CHECK(lineage_.SetEntry(std::move(task_entry)));
 }
 
-void LineageCache::AddReadyTask(const Task &task) {
+void LineageCache::AddReadyTask(const Task &task, int64_t timeout_budget_millis) {
   const TaskID task_id = task.GetTaskSpecification().TaskId();
 
   // Tasks can only become READY if they were in WAITING.
@@ -207,7 +209,7 @@ void LineageCache::AddReadyTask(const Task &task) {
   auto new_entry = LineageEntry(task, GcsStatus::UNCOMMITTED_READY);
   RAY_CHECK(lineage_.SetEntry(std::move(new_entry)));
   // Attempt to flush the task.
-  bool flushed = FlushTask(task_id);
+  bool flushed = FlushTask(task_id, timeout_budget_millis);
   if (!flushed) {
     // If we fail to flush the task here, due to uncommitted parents, then add
     // the task to a cache to be flushed in the future.
@@ -269,7 +271,8 @@ Lineage LineageCache::GetUncommittedLineage(const TaskID &task_id) const {
   return uncommitted_lineage;
 }
 
-bool LineageCache::FlushTask(const TaskID &task_id) {
+// TODO(wangqing) the 2nd param.
+bool LineageCache::FlushTask(const TaskID &task_id, int64_t timeout_budget_millis) {
   auto entry = lineage_.GetEntry(task_id);
   RAY_CHECK(entry);
   RAY_CHECK(entry->GetStatus() == GcsStatus::UNCOMMITTED_READY);
@@ -307,8 +310,12 @@ bool LineageCache::FlushTask(const TaskID &task_id) {
     };
     auto task = lineage_.GetEntry(task_id);
     // TODO(swang): Make this better...
+    auto &mutable_entry = const_cast<LineageEntry &>(*task);
+    auto &mutable_task = mutable_entry.TaskDataMutable();
+    mutable_task.SetTimeoutBudgetMillis(timeout_budget_millis);
+
     flatbuffers::FlatBufferBuilder fbb;
-    auto message = task->TaskData().ToFlatbuffer(fbb);
+    auto message = mutable_task.ToFlatbuffer(fbb);
     fbb.Finish(message);
     auto task_data = std::make_shared<protocol::TaskT>();
     auto root = flatbuffers::GetRoot<protocol::Task>(fbb.GetBufferPointer());

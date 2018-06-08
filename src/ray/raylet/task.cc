@@ -66,6 +66,10 @@ int64_t Task::TimeoutBudgetMillis() const {
   return task_execution_spec_.TimeoutBudgetMillis();
 }
 
+void Task::SetTimeoutBudgetMillis(int64_t ms) {
+  task_execution_spec_.SetTimeoutBudgetMillis(ms);
+}
+
 }  // namespace raylet
 
 }  // namespace ray

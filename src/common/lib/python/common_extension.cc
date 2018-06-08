@@ -723,6 +723,10 @@ static PyObject *PyTask_to_serialized_flatbuf(PyTask *self) {
       reinterpret_cast<char *>(fbb.GetBufferPointer()), fbb.GetSize());
 }
 
+static PyObject *PyTask_timeout_budget(PyTask *self) {
+  return PyLong_FromLongLong(self->timeout_budget);
+}
+
 static PyMethodDef PyTask_methods[] = {
     {"function_id", (PyCFunction) PyTask_function_id, METH_NOARGS,
      "Return the function ID for this task."},
@@ -757,6 +761,8 @@ static PyMethodDef PyTask_methods[] = {
      "This is a hack used to create a serialized flatbuffer object for the "
      "driver task. We're doing this because creating the flatbuffer object in "
      "Python didn't seem to work."},
+    {"timeout_budget", (PyCFunction) PyTask_timeout_budget, METH_NOARGS,
+     "Return the timeout budget millis for this task."},
     {NULL} /* Sentinel */
 };
 
@@ -803,11 +809,12 @@ PyTypeObject PyTaskType = {
 
 /* Create a PyTask from a C struct. The resulting PyTask takes ownership of the
  * TaskSpec and will deallocate the TaskSpec in the PyTask destructor. */
-PyObject *PyTask_make(TaskSpec *task_spec, int64_t task_size) {
+PyObject *PyTask_make(TaskSpec *task_spec, int64_t task_size, int64_t task_timeout_budget) {
   PyTask *result = PyObject_New(PyTask, &PyTaskType);
   result = (PyTask *) PyObject_Init((PyObject *) result, &PyTaskType);
   result->spec = task_spec;
   result->size = task_size;
+  result->timeout_budget = task_timeout_budget;
   /* The created task does not include any execution dependencies. */
   result->execution_dependencies = new std::vector<ObjectID>();
   return (PyObject *) result;

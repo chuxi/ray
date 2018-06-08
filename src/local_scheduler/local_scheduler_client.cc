@@ -95,7 +95,8 @@ void local_scheduler_submit_raylet(
 }
 
 TaskSpec *local_scheduler_get_task(LocalSchedulerConnection *conn,
-                                   int64_t *task_size) {
+                                   int64_t *task_size,
+                                   int64_t *task_timeout_budget) {
   write_message(conn->conn, static_cast<int64_t>(MessageType::GetTask), 0,
                 NULL);
   int64_t type;
@@ -113,12 +114,12 @@ TaskSpec *local_scheduler_get_task(LocalSchedulerConnection *conn,
   /* Parse the flatbuffer object. */
   auto reply_message =
       flatbuffers::GetRoot<ray::local_scheduler::protocol::GetTaskReply>(reply);
+  *task_timeout_budget = reply_message->timeout_budget_millis();
 
   /* Create a copy of the task spec so we can free the reply. */
   *task_size = reply_message->task_spec()->size();
   TaskSpec *data = (TaskSpec *) reply_message->task_spec()->data();
   TaskSpec *spec = TaskSpec_copy(data, *task_size);
-
   // Set the GPU IDs for this task. We only do this for non-actor tasks because
   // for actors the GPUs are associated with the actor itself and not with the
   // actor methods. Note that this also processes GPUs for actor creation tasks.

@@ -37,6 +37,7 @@ set(RAY_SRCS
   gcs/redis_context.cc
   gcs/asio.cc
   common/client_connection.cc
+  ../common/common.cc
   object_manager/object_manager_client_connection.cc
   object_manager/connection_pool.cc
   object_manager/object_buffer_pool.cc
@@ -59,6 +60,7 @@ set(RAY_SRCS
   raylet/node_manager.cc
   raylet/lineage_cache.cc
   raylet/raylet.cc
+  raylet/timeout_manager.cc
 )
 
 install(FILES

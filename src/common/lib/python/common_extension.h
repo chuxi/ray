@@ -29,6 +29,8 @@ typedef struct {
   // The task spec to use in the raylet case.
   ray::raylet::TaskSpecification *task_spec;
   std::vector<ray::ObjectID> *execution_dependencies;
+  int64_t timeout_budget;
+
 } PyTask;
 // clang-format on
 
@@ -60,6 +62,8 @@ PyObject *check_simple_value(PyObject *self, PyObject *args);
 PyObject *PyTask_to_string(PyObject *, PyObject *args);
 PyObject *PyTask_from_string(PyObject *, PyObject *args);
 
-PyObject *PyTask_make(TaskSpec *task_spec, int64_t task_size);
+PyObject *PyTask_make(TaskSpec *task_spec,
+                      int64_t task_size,
+                      int64_t task_timeout_budget);
 
 #endif /* COMMON_EXTENSION_H */

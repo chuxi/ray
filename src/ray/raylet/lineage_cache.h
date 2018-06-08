@@ -141,10 +141,12 @@ class Lineage {
   ///
   /// \param entry_id The task ID to include in the ForwardTaskRequest
   /// flatbuffer.
+  /// \param timeout_budget_millis The task's timeout budget.
   /// \return An offset to the serialized lineage. The serialization includes
   /// all task and object entries in the lineage.
   flatbuffers::Offset<protocol::ForwardTaskRequest> ToFlatbuffer(
-      flatbuffers::FlatBufferBuilder &fbb, const TaskID &entry_id) const;
+      flatbuffers::FlatBufferBuilder &fbb, const TaskID &entry_id,
+      int64_t timeout_budget_millis) const;
 
  private:
   /// The lineage entries.
@@ -176,7 +178,7 @@ class LineageCache {
   /// mutable fields in the execution specification.
   ///
   /// \param task The task to set as ready.
-  void AddReadyTask(const Task &task);
+  void AddReadyTask(const Task &task, int64_t timeout_budget_millis);
 
   /// Remove a task that was waiting for execution. Its uncommitted lineage
   /// will remain unchanged.
@@ -210,7 +212,7 @@ class LineageCache {
   /// Try to flush a task that is in UNCOMMITTED_READY state. If the task has
   /// parents that are not committed yet, then the child will be flushed once
   /// the parents have been committed.
-  bool FlushTask(const TaskID &task_id);
+  bool FlushTask(const TaskID &task_id, int64_t timeout_budget_millis = -1);
   /// Evict a remote task and its lineage. This should only be called if we
   /// are sure that the remote task and its lineage are committed.
   void EvictRemoteLineage(const UniqueID &task_id);

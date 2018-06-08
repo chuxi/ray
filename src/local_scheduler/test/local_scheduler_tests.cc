@@ -208,13 +208,15 @@ TEST object_reconstruction_test(void) {
      * and second from the reconstruct request. */
     int64_t task_assigned_size;
     local_scheduler_submit(worker, execution_spec);
+    // TODO(wangqing) :3th argument.
     TaskSpec *task_assigned =
-        local_scheduler_get_task(worker, &task_assigned_size);
+        local_scheduler_get_task(worker, &task_assigned_size, nullptr);
     ASSERT_EQ(memcmp(task_assigned, spec, task_size), 0);
     ASSERT_EQ(task_assigned_size, task_size);
     int64_t reconstruct_task_size;
+    // TODO(wangqing) :3th argument.
     TaskSpec *reconstruct_task =
-        local_scheduler_get_task(worker, &reconstruct_task_size);
+        local_scheduler_get_task(worker, &reconstruct_task_size, nullptr);
     ASSERT_EQ(memcmp(reconstruct_task, spec, task_size), 0);
     ASSERT_EQ(reconstruct_task_size, task_size);
     /* Clean up. */
@@ -312,8 +314,9 @@ TEST object_reconstruction_recursive_test(void) {
     }
     /* Make sure we receive each task from the initial submission. */
     for (int i = 0; i < NUM_TASKS; ++i) {
+      // TODO(wangqing) :3th argument.
       int64_t task_size;
-      TaskSpec *task_assigned = local_scheduler_get_task(worker, &task_size);
+      TaskSpec *task_assigned = local_scheduler_get_task(worker, &task_size, nullptr);
       ASSERT_EQ(memcmp(task_assigned, specs[i].Spec(), specs[i].SpecSize()), 0);
       ASSERT_EQ(task_size, specs[i].SpecSize());
       free(task_assigned);
@@ -322,8 +325,9 @@ TEST object_reconstruction_recursive_test(void) {
      * lineage during reconstruction. */
     for (int i = 0; i < NUM_TASKS; ++i) {
       int64_t task_assigned_size;
+      // TODO(wangqing) :3th argument.
       TaskSpec *task_assigned =
-          local_scheduler_get_task(worker, &task_assigned_size);
+          local_scheduler_get_task(worker, &task_assigned_size, nullptr);
       for (auto it = specs.begin(); it != specs.end(); it++) {
         if (memcmp(task_assigned, it->Spec(), task_assigned_size) == 0) {
           specs.erase(it);
@@ -431,8 +435,9 @@ TEST object_reconstruction_suppression_test(void) {
     /* Make sure we receive the task once. This will block until the
      * object_table_add callback completes. */
     int64_t task_assigned_size;
+    // TODO(wangqing) :3th argument.
     TaskSpec *task_assigned =
-        local_scheduler_get_task(worker, &task_assigned_size);
+        local_scheduler_get_task(worker, &task_assigned_size, nullptr);
     ASSERT_EQ(
         memcmp(task_assigned, object_reconstruction_suppression_spec->Spec(),
                object_reconstruction_suppression_spec->SpecSize()),
