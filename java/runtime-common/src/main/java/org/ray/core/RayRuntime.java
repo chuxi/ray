@@ -507,7 +507,7 @@ public abstract class RayRuntime implements RayApi {
   }
 
   @Override
-  public <TResult> void endBatch(TResult r) {
+  public <ResultT> void endBatch(ResultT r) {
     long batchId = UniqueIdHelper.getBatchId(this.getCurrentTaskId());
     Ray.getRappLogger().debug("end batch with id " + batchId);
     this.putRaw(UniqueIdHelper.batchResultObject(batchId).getId(), r);

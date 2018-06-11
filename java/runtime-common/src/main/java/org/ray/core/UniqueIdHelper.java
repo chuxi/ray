@@ -11,7 +11,6 @@ import org.ray.util.MD5Digestor;
 import org.ray.util.logger.RayLog;
 
 
-
 //
 // see src/common/common.h for UniqueID layout
 //
@@ -240,7 +239,7 @@ public class UniqueIdHelper {
       byte[] cbuffer = lbuffer.putLong(cid).array();
       idBytes = MD5Digestor.digest(cbuffer, WorkerContext.nextCallIndex());
 
-      // if not
+    // if not
     } else {
       long cid = rand.get().nextLong();
       byte[] cbuffer = lbuffer.putLong(cid).array();
@@ -290,7 +289,6 @@ public class UniqueIdHelper {
     setUniqueness(wbb, uniqueId);
     return new RayObject<>(rid);
   }
-
 
   public static boolean isLambdaFunction(UniqueID functionId) {
     ByteBuffer wbb = ByteBuffer.wrap(functionId.getBytes());
