@@ -85,7 +85,7 @@ class TaskExecutionSpecification {
   /// Set the task's timeout budget time.
   ///
   /// \return void
-  void SetTimeoutBudgetMillis(int64_t ms);
+  void SetTimeoutBudgetMillis(int64_t budget);
 
  private:
   protocol::TaskExecutionSpecificationT execution_spec_;

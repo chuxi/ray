@@ -900,7 +900,7 @@ class Worker(object):
             timeout_callback()
             return
 
-        if timeout_budget == -1:
+        if timeout_budget > 0:
             timer.start()
 
         # Get task arguments from the object store.
