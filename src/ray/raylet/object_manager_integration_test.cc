@@ -45,7 +45,7 @@ class TestObjectManagerBase : public ::testing::Test {
     node_manager_config.worker_command.push_back(raylet_socket_name.c_str());
     node_manager_config.worker_command.push_back(store_socket_name.c_str());
     return node_manager_config;
-  };
+  }
 
   void SetUp() {
     // start store

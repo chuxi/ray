@@ -767,6 +767,16 @@ class ActorHandle(object):
             args = []
         if kwargs is None:
             kwargs = {}
+
+        """
+        TODO: Move this code into ray.signature, like this：
+        timeout_millis = ray.signature.pop_timeout_millis_arg(self._function_signature, args, kwargs)
+        """
+        timeout_millis = -1
+        if 'timeout_millis' in kwargs:
+            timeout_millis = kwargs['timeout_millis']
+            kwargs.pop('timeout_millis')
+
         args = signature.extend_args(function_signature, args, kwargs)
 
         # Execute functions locally if Ray is run in PYTHON_MODE
@@ -805,7 +815,8 @@ class ActorHandle(object):
             # We add one for the dummy return ID.
             num_return_vals=num_return_vals + 1,
             resources={"CPU": self._ray_actor_method_cpus},
-            driver_id=self._ray_actor_driver_id)
+            driver_id=self._ray_actor_driver_id,
+            timeout_millis=timeout_millis)
         # Update the actor counter and cursor to reflect the most recent
         # invocation.
         self._ray_actor_counter += 1

@@ -5,6 +5,7 @@
 #include "ray/raylet/format/node_manager_generated.h"
 #include "ray/util/util.h"
 
+
 namespace {
 
 namespace local_scheduler_protocol = ray::local_scheduler::protocol;
@@ -648,10 +649,11 @@ void NodeManager::SubmitTask(const Task &task,
   const TaskSpecification &spec = task.GetTaskSpecification();
 
   // Check timeout.
+  auto ms = current_time_ms();
   if (!timeout_manager_.TimeoutEntryExists(spec.TaskId())) {
-    timeout_manager_.AddTimeoutEntry(spec.TaskId(), timeout_budget_millis, current_time_ms());
+    timeout_manager_.AddTimeoutEntry(spec.TaskId(), timeout_budget_millis, ms);
   } else {
-    timeout_manager_.UpdateTimeoutBudget(spec.TaskId(), spec.TimeoutMillis(), current_time_ms());
+    timeout_manager_.UpdateTimeoutBudget(spec.TaskId(), spec.TimeoutMillis(), ms);
   }
 
   if (spec.IsActorTask()) {
@@ -752,9 +754,9 @@ void NodeManager::AssignTask(Task &task) {
     return;
   }
 
-  timeout_manager_.UpdateTimeoutBudget(spec.TaskId(), spec.TimeoutMillis(), current_time_ms());
+  auto ms = current_time_ms();
+  timeout_manager_.UpdateTimeoutBudget(spec.TaskId(), spec.TimeoutMillis(), ms);
   auto timeout_budget_millis = timeout_manager_.TimeoutBudgetMillis(spec.TaskId());
-
   RAY_LOG(DEBUG) << "Assigning task to worker with pid " << worker->Pid();
   flatbuffers::FlatBufferBuilder fbb;
 
