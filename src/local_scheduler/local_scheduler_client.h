@@ -121,9 +121,11 @@ TaskSpec *local_scheduler_get_task(LocalSchedulerConnection *conn,
 ///
 /// \param conn The connection information.
 /// \param task_size A pointer to fill out with the task size.
+/// \param task_timeout_budget A pointer to fill out with the task timeout budget.
 /// \return The address of the assigned task.
 TaskSpec *local_scheduler_get_task_raylet(LocalSchedulerConnection *conn,
-                                          int64_t *task_size);
+                                          int64_t *task_size,
+                                          int64_t *task_timeout_budget);
 
 /**
  * Tell the local scheduler that the client has finished executing a task.
