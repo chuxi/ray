@@ -20,11 +20,10 @@ import org.ray.api.RayObject;
 import org.ray.api.RayObjects;
 import org.ray.api.UniqueID;
 import org.ray.api.WaitResult;
-import org.ray.api.internal.RayFunc;
 import org.ray.api.funcs.RayFunc_1_1;
 import org.ray.api.funcs.RayFunc_3_1;
 import org.ray.api.funcs.RayFunc_4_1;
-import org.ray.api.internal.Callable;
+import org.ray.api.internal.RayFunc;
 import org.ray.core.model.RayParameters;
 import org.ray.spi.LocalSchedulerLink;
 import org.ray.spi.LocalSchedulerProxy;
@@ -458,20 +457,11 @@ public abstract class RayRuntime implements RayApi {
       RayObject<ResultT> result = UniqueIdHelper.batchResultObject(batchId);
       UniqueID endTaskId = UniqueIdHelper.getBatchEndTaskId(taskId, batchId);
 
-      if (Ray.isRemoteLambda()) {
-        ret = this.worker.rpc(endTaskId, UniqueID.nil, RayFunc_3_1.class, completionHandler, 1,
-            new Object[]{batchId, context, result}).getObjs()[0];
-      } else {
-        ret = this.worker.rpc(endTaskId, () -> completionHandler.apply(null, null, null), 1,
-            new Object[]{batchId, context, result}).getObjs()[0];
-      }
+      ret = this.worker.rpc(endTaskId, RayFunc_3_1.class, completionHandler, 1,
+          new Object[]{batchId, context, result}).getObjs()[0];
     }
 
-    if (Ray.isRemoteLambda()) {
-      this.call(taskId, RayFunc_1_1.class, starter, 1, context);
-    } else {
-      this.call(taskId, () -> starter.apply(null), 1, context);
-    }
+    this.call(taskId, RayFunc_1_1.class, starter, 1, context);
     return ret;
   }
 
@@ -489,20 +479,11 @@ public abstract class RayRuntime implements RayApi {
       RayObject<ResultT> result = UniqueIdHelper.batchResultObject(batchId);
       UniqueID endTaskId = UniqueIdHelper.getBatchEndTaskId(taskId, batchId);
 
-      if (Ray.isRemoteLambda()) {
-        ret = this.worker.rpc(endTaskId, UniqueID.nil, RayFunc_4_1.class, completionHandler, 1,
-            new Object[]{completionHost, batchId, context, result}).getObjs()[0];
-      } else {
-        ret = this.worker.rpc(endTaskId, () -> completionHandler.apply(null, null, null, null), 1,
-            new Object[]{completionHost, batchId, context, result}).getObjs()[0];
-      }
+      ret = this.worker.rpc(endTaskId, RayFunc_4_1.class, completionHandler, 1,
+          new Object[]{completionHost, batchId, context, result}).getObjs()[0];
     }
 
-    if (Ray.isRemoteLambda()) {
-      this.call(taskId, RayFunc_1_1.class, starter, 1, context);
-    } else {
-      this.call(taskId, () -> starter.apply(null), 1, context);
-    }
+    this.call(taskId, RayFunc_1_1.class, starter, 1, context);
     return ret;
   }
 
