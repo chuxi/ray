@@ -3,12 +3,10 @@ package org.ray.api;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import org.ray.api.internal.RayFunc;
-import org.ray.api.internal.Callable;
 import org.ray.api.funcs.RayFunc_1_1;
 import org.ray.api.funcs.RayFunc_3_1;
 import org.ray.api.funcs.RayFunc_4_1;
-import org.ray.api.internal.Callable;
+import org.ray.api.internal.RayFunc;
 import org.ray.util.exception.TaskExecutionException;
 
 /**
@@ -98,8 +96,6 @@ public interface RayApi {
    */
   <R> RayList<R> callWithReturnIndices(UniqueID taskId, Class<?> funcCls, RayFunc lambda,
                                        Integer returnCount, Object... args);
-
-  boolean isRemoteLambda();
 
   /**
    * NOTE the following batch related functions are experimental.
