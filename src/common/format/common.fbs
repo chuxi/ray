@@ -52,6 +52,9 @@ table TaskInfo {
   // The required_resources vector indicates the quantities of the different
   // resources required by this task.
   required_resources: [ResourcePair];
+  // The timeout of task. The unit is millisecond.
+  // -1 means never timeout, and 0 means timeout.
+  timeout_millis:long = -1;
 }
 
 // Object information data structure.
