@@ -72,6 +72,9 @@ build_arrow_func() {
     BUILD_ARROW_PLASMA_JAVA_CLIENT=on
   fi
 
+  # Clean the build cache for arrow and parquet, in case the error of "Cannot find Parquet" occurs.
+  rm -rf $TP_DIR/build/arrow/python/build/temp*
+
   ARROW_HOME=$TP_DIR/pkg/arrow/cpp/build/cpp-install
   BOOST_ROOT=$TP_DIR/pkg/boost \
   FLATBUFFERS_HOME=$FLATBUFFERS_HOME \
@@ -112,8 +115,6 @@ build_arrow_func() {
   PKG_CONFIG_PATH=$ARROW_HOME/lib/pkgconfig \
   PYARROW_WITH_PLASMA=1 \
   PYARROW_BUNDLE_ARROW_CPP=1 \
-  PARQUET_HOME=$TP_DIR/pkg/arrow/cpp/build/cpp-install \
-  PYARROW_WITH_PARQUET=1 \
   $PYTHON_EXECUTABLE setup.py build
 
   PKG_CONFIG_PATH=$ARROW_HOME/lib/pkgconfig \
